@@ -1,0 +1,7 @@
+venv/
+build/
+output/
+dist/
+__pycache__/
+*.txt
+

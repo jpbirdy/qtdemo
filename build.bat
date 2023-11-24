@@ -1,0 +1,1 @@
+pyinstaller --noconfirm --onefile --windowed --name "app" --log-level "INFO" --add-data "D:/workspace/qtdemo/icon.png;./"  "D:/workspace/qtdemo/app.py"
