@@ -47,6 +47,14 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
+
+from chrome import start_chrome
+def global_start_chrome():
+    lock.lockForRead()
+    start_chrome()
+    lock.unlock()
+
+
 def main():
     
 
@@ -97,6 +105,7 @@ def main():
     # 10s后执行，只执行一次
     run_time = datetime.now() + timedelta(seconds=10)
     scheduler.add_job(task1, 'date', run_date=run_time)
+    scheduler.add_job(global_start_chrome, 'date', run_date=run_time)
     
     next_run_time = datetime.now() + timedelta(seconds=20)
     
@@ -104,6 +113,10 @@ def main():
     scheduler.add_job(task1, 'interval', seconds=5, next_run_time=next_run_time, max_instances=1)
     scheduler.add_job(task2, 'interval', seconds=5, next_run_time=next_run_time, max_instances=1)
     scheduler.add_job(task3, 'interval', seconds=5, next_run_time=next_run_time, max_instances=1)
+    
+    scheduler.add_job(global_start_chrome, 'interval',
+                      seconds=60, max_instances=1)
+    
     
     scheduler.start()
 
@@ -136,10 +149,11 @@ def main():
     # 最小化时显示到托盘，并创建退出菜单
     a1 = QtGui.QAction("&show", triggered=w.show)
     def quit():
-        try:
-            scheduler.shutdown()
-        except:
-            pass
+        # try:
+        #     if scheduler.running:
+        #         scheduler.shutdown()
+        # except:
+        #     pass
         app.quit()
 
     a2 = QtGui.QAction("&quit", triggered=quit)
@@ -154,9 +168,11 @@ def main():
 
     w.resize(600, 800)
     w.setWindowTitle('Simple')
-    # w.show()
-    
-    app.exec()
+    w.show()
+    try:
+        app.exec()
+    except:
+        app.quit()
    
 
 if __name__ == "__main__":
